@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "ex-1.html",
+    "href": "ex-1.html",
+    "title": "Arpeggios e PIMA",
+    "section": "",
+    "text": "import { init, karplusStrong } from \"/src/audio/karplus-strong.js\"\nimport { makePlayer } from \"/src/audio/audio.js\";\nimport { notes, baseKeyboard } from \"/src/audio/notes.js\";\n\nensurePlayer = () =&gt; {\n    if (window.player) {\n        return window.player;\n    }\n\n    let player = makePlayer();\n    window.player = player;\n    return player;\n}\nplayNote = (pitch) =&gt; {\n    const player = ensurePlayer();\n    const track = karplusStrong(48000, pitch, 3, 0.5);\n    player.playTrack(track);\n}\nplayString = (string, fret) =&gt; {\n    const strings = [\n        baseKeyboard[\"E\"],\n        baseKeyboard[\"B\"] - 12,\n        baseKeyboard[\"G\"] - 12,\n        baseKeyboard[\"D\"] - 12,\n        baseKeyboard[\"A\"] - 24,\n        baseKeyboard[\"E\"] - 24,\n        baseKeyboard[\"C\"] - 24,\n    ]\n    playNote(notes[strings[string - 1] + fret]);\n}\nsleep = (amount) =&gt; new Promise((resolve) =&gt; {\n    setTimeout(resolve, amount);\n})\nmutable stop = false;\nchords = ({\n    \"C\": {\n        1: 0, 2: 1, 3: 0, 4: 2, 5: 3, 6: 0, 7: 0\n    },\n    \"Em\": {\n        1: 0, 2: 0, 3: 0, 4: 2, 5: 2, 6: 0\n    }\n});\n\narpeggiate = async (chord, sequence) =&gt; {\n    const delay = 250;\n    const notes = sequence.map((string) =&gt; [string, chords[chord][string], delay]);\n    mutable stop = false;\n    while (!(mutable stop)) {\n        for (const [string, fret, delay] of notes) {\n            playString(string, fret);\n            await sleep(delay);\n        }\n    }\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nviewof chosenChord = Inputs.select(Object.keys(chords), {\"value\": \"C\", label: \"Acorde\"})\n\nstopButton = {\n    const result = htl.html`&lt;button&gt;Parar&lt;/button&gt;`;\n    result.onclick = () =&gt; {\n        mutable stop = true;\n    }\n    return result;\n}\n\nlowestString = {\n    debugger;\n    const chord = chords[chosenChord];\n    for (let i = 7; i &gt;= 1; --i) {\n        if (chord[i] !== undefined) {\n            return i;\n        }\n    }\n    throw new Error(\"bad chord: \" + chosenChord); \n}\n\nbutton = {\n    const result = htl.html`&lt;button&gt;Tocar&lt;/button&gt;`;\n    result.onclick = async () =&gt; {\n        debugger;\n        arpeggiate(chosenChord, arpeggio);\n    }\n    return result;\n}\n\nremakeArpeggio = async () =&gt; {\n    const newArpeggio = [lowestString];\n    let prevValue;\n    let newValue;\n    let offset = ~~(Math.random() * 3) + 1;\n    for (let i = 0; i &lt; 5; ++i) {\n        while (newValue === prevValue) {\n            newValue = ~~(Math.random() * 3) + offset;\n        }\n        newArpeggio.push(newValue);\n        prevValue = newValue;\n    }\n    mutable arpeggio = newArpeggio;\n}\n\nremakeArpeggioButton = {\n    const result = htl.html`&lt;button&gt;Resetar&lt;/button&gt;`;\n    result.onclick = remakeArpeggio;\n    return result;\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmutable arpeggio = [7, 4, 3, 2, 3, 4]\n{\n    const strings = Array.from(new Set(arpeggio)).sort((a, b) =&gt; b - a);\n    const names = Object.fromEntries(strings.map((v, i) =&gt; [v, (\"PIMA\").charAt(i)]));\n    const result = htl.html`&lt;table style=\"font-family: monospace\"&gt;&lt;/table&gt;`;\n    for (let i = 1; i&lt;=7; ++i) {\n        const row = htl.html`&lt;tr&gt;&lt;/tr&gt;`;\n        const cell = htl.html`&lt;td style=\"border: 1px solid #ddd; padding: 3px\"&gt;&lt;/td&gt;`;\n        cell.innerText = `${i}:`;\n        row.appendChild(cell);\n        for (const entry of arpeggio) {\n            const cell = htl.html`&lt;td style=\"border: 1px solid #ddd; padding: 3px\"&gt;&lt;/td&gt;`;\n            if (entry === i) {\n                cell.innerText = `${names[i]}`;\n            }\n            row.appendChild(cell);\n        }\n        result.appendChild(row);\n    }\n    return result;\n}"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Exercicios 7 cordas",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  }
+]
