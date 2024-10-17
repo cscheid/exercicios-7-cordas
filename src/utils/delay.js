@@ -1,0 +1,7 @@
+async function delay(timeInMillis) {
+  await new Promise((res, _rej) => setTimeout(res, timeInMillis));
+}
+export {
+  delay
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiZGVsYXkudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImV4cG9ydCBhc3luYyBmdW5jdGlvbiBkZWxheSh0aW1lSW5NaWxsaXM6IG51bWJlcikge1xuICBhd2FpdCBuZXcgUHJvbWlzZSgocmVzLCBfcmVqKSA9PiBzZXRUaW1lb3V0KHJlcywgdGltZUluTWlsbGlzKSk7XG59XG4iXSwKICAibWFwcGluZ3MiOiAiQUFBQSxlQUFzQixNQUFNLGNBQXNCO0FBQ2hELFFBQU0sSUFBSSxRQUFRLENBQUMsS0FBSyxTQUFTLFdBQVcsS0FBSyxZQUFZLENBQUM7QUFDaEU7IiwKICAibmFtZXMiOiBbXQp9Cg==

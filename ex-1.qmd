@@ -1,0 +1,144 @@
+---
+title: Arpeggios e PIMA
+format: html
+echo: false
+---
+
+```{ojs}
+//| output: false
+import { init, karplusStrong } from "/src/audio/karplus-strong.js"
+import { makePlayer } from "/src/audio/audio.js";
+import { notes, baseKeyboard } from "/src/audio/notes.js";
+
+ensurePlayer = () => {
+    if (window.player) {
+        return window.player;
+    }
+
+    let player = makePlayer();
+    window.player = player;
+    return player;
+}
+playNote = (pitch) => {
+    const player = ensurePlayer();
+    const track = karplusStrong(48000, pitch, 3, 0.5);
+    player.playTrack(track);
+}
+playString = (string, fret) => {
+    const strings = [
+        baseKeyboard["E"],
+        baseKeyboard["B"] - 12,
+        baseKeyboard["G"] - 12,
+        baseKeyboard["D"] - 12,
+        baseKeyboard["A"] - 24,
+        baseKeyboard["E"] - 24,
+        baseKeyboard["C"] - 24,
+    ]
+    playNote(notes[strings[string - 1] + fret]);
+}
+sleep = (amount) => new Promise((resolve) => {
+    setTimeout(resolve, amount);
+})
+mutable stop = false;
+chords = ({
+    "C": {
+        1: 0, 2: 1, 3: 0, 4: 2, 5: 3, 6: 0, 7: 0
+    },
+    "Em": {
+        1: 0, 2: 0, 3: 0, 4: 2, 5: 2, 6: 0
+    }
+});
+
+arpeggiate = async (chord, sequence) => {
+    const delay = 250;
+    const notes = sequence.map((string) => [string, chords[chord][string], delay]);
+    mutable stop = false;
+    while (!(mutable stop)) {
+        for (const [string, fret, delay] of notes) {
+            playString(string, fret);
+            await sleep(delay);
+        }
+    }
+}
+```
+
+```{ojs}
+viewof chosenChord = Inputs.select(Object.keys(chords), {"value": "C", label: "Acorde"})
+
+stopButton = {
+    const result = htl.html`<button>Parar</button>`;
+    result.onclick = () => {
+        mutable stop = true;
+    }
+    return result;
+}
+
+lowestString = {
+    debugger;
+    const chord = chords[chosenChord];
+    for (let i = 7; i >= 1; --i) {
+        if (chord[i] !== undefined) {
+            return i;
+        }
+    }
+    throw new Error("bad chord: " + chosenChord); 
+}
+
+button = {
+    const result = htl.html`<button>Tocar</button>`;
+    result.onclick = async () => {
+        debugger;
+        arpeggiate(chosenChord, arpeggio);
+    }
+    return result;
+}
+
+remakeArpeggio = async () => {
+    const newArpeggio = [lowestString];
+    let prevValue;
+    let newValue;
+    let offset = ~~(Math.random() * 3) + 1;
+    for (let i = 0; i < 5; ++i) {
+        while (newValue === prevValue) {
+            newValue = ~~(Math.random() * 3) + offset;
+        }
+        newArpeggio.push(newValue);
+        prevValue = newValue;
+    }
+    mutable arpeggio = newArpeggio;
+}
+
+remakeArpeggioButton = {
+    const result = htl.html`<button>Resetar</button>`;
+    result.onclick = remakeArpeggio;
+    return result;
+}
+
+```
+
+---
+
+```{ojs}
+//| output: true
+mutable arpeggio = [7, 4, 3, 2, 3, 4]
+{
+    const strings = Array.from(new Set(arpeggio)).sort((a, b) => b - a);
+    const names = Object.fromEntries(strings.map((v, i) => [v, ("PIMA").charAt(i)]));
+    const result = htl.html`<table style="font-family: monospace"></table>`;
+    for (let i = 1; i<=7; ++i) {
+        const row = htl.html`<tr></tr>`;
+        const cell = htl.html`<td style="border: 1px solid #ddd; padding: 3px"></td>`;
+        cell.innerText = `${i}:`;
+        row.appendChild(cell);
+        for (const entry of arpeggio) {
+            const cell = htl.html`<td style="border: 1px solid #ddd; padding: 3px"></td>`;
+            if (entry === i) {
+                cell.innerText = `${names[i]}`;
+            }
+            row.appendChild(cell);
+        }
+        result.appendChild(row);
+    }
+    return result;
+}
+```
